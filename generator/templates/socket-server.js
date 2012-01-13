@@ -19,7 +19,8 @@ var app = express.createServer()
 
 
 /*specifys the port to listen for messages*/
-app.listen({{port}});
+app.listen({{port}})
+;
 
 
 /**
@@ -27,9 +28,11 @@ app.listen({{port}});
  * --> minimal overhead
  */
 //io.configure(function () {
-//  io.set('heartbeats', false);
-//  io.set('close timeout', 5*60*1000);
-//  io.set('log level', 4);
+//    //send own heartbeats
+//    io.set('heartbeats', false);
+//    //high timeout
+//    io.set('heartbeat timeout', 2 * 60 * 1000)
+//    io.set('close timeout', 3 * 60 * 1000);
 //});
 
 /**
@@ -63,6 +66,15 @@ io.sockets.on('connection', function (socket) {
          *"socket" contains the information about the disconnected user */
     });
 
+
+    /**
+     * enable this options for connection-check socket-server
+     * --> echo the received value to show connection-health
+     */
+//    socket.on('p', function(val) {
+//        socket.emit('p', val);
+//    });
+
 });
 
 
@@ -71,14 +83,15 @@ io.sockets.on('connection', function (socket) {
  */
 
 var chat = io
-  .of('/chat');
-  chat.on('connection', function (socket) {
-    socket.emit('message',  "back to sender");
-    chat.emit('message',  "message to everyone in '/chat'");
-  });
+    .of('/chat');
+chat.on('connection', function (socket) {
+    socket.emit('message', "back to sender");
+    chat.emit('message', "message to everyone in '/chat'");
+});
 
 var news = io
-  .of('/news');
-  news.on('connection', function (socket) {
+    .of('/news');
+news.on('connection', function (socket) {
     socket.emit('newmember', "{ news: 'joined' }");
-  });
+});
+
